@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OASIS · Data Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="data-explorer.css">
+</head>
+<body>
+
+<!-- ─── TOP BAR ─── -->
+<header class="de-header">
+  <a href="index.html" class="de-back" title="Back to main site">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back to OASIS
+  </a>
+  <h1 class="de-logo">OASIS <span class="de-accent">Data Explorer</span></h1>
+  <div class="de-header-right">
+    <span class="de-header-pill" id="headerStats"></span>
+  </div>
+</header>
+
+<!-- ─── SUMMARY CARDS ─── -->
+<section class="de-summary" id="summarySection">
+  <div class="de-stat-card">
+    <div class="de-stat-icon">🛰️</div>
+    <div class="de-stat-num" id="statTrainTiles">—</div>
+    <div class="de-stat-label">Training Tiles</div>
+  </div>
+  <div class="de-stat-card">
+    <div class="de-stat-icon">🧪</div>
+    <div class="de-stat-num" id="statTestTiles">—</div>
+    <div class="de-stat-label">Test Tiles</div>
+  </div>
+  <div class="de-stat-card">
+    <div class="de-stat-icon">🌈</div>
+    <div class="de-stat-num" id="statBands">—</div>
+    <div class="de-stat-label">Spectral Bands</div>
+  </div>
+  <div class="de-stat-card">
+    <div class="de-stat-icon">📅</div>
+    <div class="de-stat-num" id="statMonths">—</div>
+    <div class="de-stat-label">Monthly Obs.</div>
+  </div>
+  <div class="de-stat-card">
+    <div class="de-stat-icon">🌍</div>
+    <div class="de-stat-num" id="statRegions">3</div>
+    <div class="de-stat-label">Regions</div>
+  </div>
+  <div class="de-stat-card">
+    <div class="de-stat-icon">🏷️</div>
+    <div class="de-stat-num" id="statSources">3</div>
+    <div class="de-stat-label">Label Sources</div>
+  </div>
+</section>
+
+<!-- ─── GLOBE MAP ─── -->
+<section class="de-section">
+  <h2 class="de-sec-title">Global Tile Distribution</h2>
+  <p class="de-sec-sub">16 training tiles and 5 test tiles across three tropical forest regions — click markers to inspect</p>
+  <div class="de-globe-wrap" id="globeWrap">
+    <canvas id="globeCanvas"></canvas>
+    <div class="de-globe-tooltip" id="globeTooltip"></div>
+    <div class="de-globe-legend">
+      <span class="gl-item"><span class="gl-dot gl-train"></span>Train (16)</span>
+      <span class="gl-item"><span class="gl-dot gl-test"></span>Test (5)</span>
+    </div>
+    <div class="de-globe-hint">Drag to rotate · Scroll to zoom · Click marker for details</div>
+  </div>
+</section>
+
+<!-- ─── TILE GALLERY ─── -->
+<section class="de-section">
+  <h2 class="de-sec-title">Tile Explorer</h2>
+  <p class="de-sec-sub">Browse all satellite tiles — click any card to see modalities, NDVI time series, and labels</p>
+
+  <div class="de-filter-bar">
+    <button class="de-filter active" data-filter="all">All (21)</button>
+    <button class="de-filter" data-filter="train">Train (16)</button>
+    <button class="de-filter" data-filter="test">Test (5)</button>
+    <div class="de-filter-sep"></div>
+    <button class="de-filter" data-filter="South America">S. America</button>
+    <button class="de-filter" data-filter="Southeast Asia">SE Asia</button>
+    <button class="de-filter" data-filter="Africa">Africa</button>
+  </div>
+
+  <div class="de-tile-grid" id="tileGrid"></div>
+</section>
+
+<!-- ─── TILE DETAIL MODAL ─── -->
+<div class="de-modal-overlay" id="modalOverlay">
+  <div class="de-modal" id="modalContent">
+    <button class="de-modal-close" id="modalClose">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M13.5 4.5L4.5 13.5M4.5 4.5l9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <div class="de-modal-header">
+      <h2 class="de-modal-title" id="modalTitle">—</h2>
+      <div class="de-modal-badges" id="modalBadges"></div>
+    </div>
+
+    <div class="de-img-tabs" id="imgTabs"></div>
+
+    <div class="de-modal-img-wrap">
+      <img id="modalImg" class="de-modal-img" src="" alt="Tile visualization">
+      <div class="de-img-caption" id="imgCaption"></div>
+    </div>
+
+    <div class="de-time-compare" id="timeCompare">
+      <h3 class="de-modal-sub">Temporal Change — 2020 → 2025</h3>
+      <div class="de-compare-row">
+        <div class="de-compare-cell">
+          <img id="compareFirst" src="" alt="First observation">
+          <span>Jan 2020</span>
+        </div>
+        <div class="de-compare-arrow">→</div>
+        <div class="de-compare-cell">
+          <img id="compareMid" src="" alt="Mid observation">
+          <span>~2022</span>
+        </div>
+        <div class="de-compare-arrow">→</div>
+        <div class="de-compare-cell">
+          <img id="compareLast" src="" alt="Last observation">
+          <span>Dec 2025</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="de-modal-stats" id="modalStats"></div>
+
+    <div class="de-chart-wrap" id="ndviChartWrap">
+      <h3 class="de-modal-sub">NDVI Time Series — 72 months</h3>
+      <div class="de-chart-inner"><canvas id="ndviChart"></canvas></div>
+    </div>
+
+    <div class="de-chart-wrap" id="bandChartWrap">
+      <h3 class="de-modal-sub">Spectral Band Means — Sentinel-2</h3>
+      <div class="de-chart-inner"><canvas id="bandChart"></canvas></div>
+    </div>
+
+    <div class="de-label-section" id="labelSection">
+      <h3 class="de-modal-sub">Deforestation Labels</h3>
+      <div class="de-label-grid" id="labelGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TIME-LAPSE SECTION ─── -->
+<section class="de-section">
+  <h2 class="de-sec-title">Time-Lapse — Amazon Tile 18NWG_6_6</h2>
+  <p class="de-sec-sub">True-color composites from each year showing land cover change</p>
+  <div class="de-timelapse">
+    <div class="de-tl-display">
+      <img id="tlImage" src="data-assets/thumbs/timelapse_2020.png" alt="Time-lapse frame">
+      <div class="de-tl-year" id="tlYear">2020</div>
+    </div>
+    <div class="de-tl-controls">
+      <button class="de-tl-btn" id="tlPlay">▶ Play</button>
+      <input type="range" id="tlSlider" min="2020" max="2025" value="2020" step="1" class="de-tl-slider">
+      <div class="de-tl-labels">
+        <span>2020</span><span>2021</span><span>2022</span><span>2023</span><span>2024</span><span>2025</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── DEFORESTATION OVERVIEW ─── -->
+<section class="de-section">
+  <h2 class="de-sec-title">Deforestation Overview</h2>
+  <p class="de-sec-sub">Alert density across training tiles from three independent label sources</p>
+  <div class="de-chart-wrap de-wide-chart">
+    <div class="de-chart-inner de-chart-tall"><canvas id="deforestChart"></canvas></div>
+  </div>
+</section>
+
+<!-- ─── DATA SPECIFICATION TABLE ─── -->
+<section class="de-section">
+  <h2 class="de-sec-title">Data Specifications</h2>
+  <div class="de-table-wrap">
+    <table class="de-table">
+      <thead>
+        <tr><th>Source</th><th>Type</th><th>Bands</th><th>Resolution</th><th>Temporal</th><th>Format</th><th>CRS</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Sentinel-2</td><td>Optical</td><td>12 spectral</td><td>10 m/px</td><td>Monthly (72)</td><td>GeoTIFF uint16</td><td>Local UTM</td></tr>
+        <tr><td>Sentinel-1</td><td>Radar (SAR)</td><td>1 (VV)</td><td>~30 m/px</td><td>Monthly (~96)</td><td>GeoTIFF float32</td><td>Local UTM</td></tr>
+        <tr><td>AEF Embeddings</td><td>Foundation</td><td>64 latent</td><td>10 m/px</td><td>Annual (6)</td><td>GeoTIFF float32</td><td>EPSG:4326</td></tr>
+        <tr><td>RADD</td><td>Label (radar)</td><td>1</td><td>10 m/px</td><td>Cumulative</td><td>GeoTIFF uint32</td><td>EPSG:4326</td></tr>
+        <tr><td>GLAD-L</td><td>Label (Landsat)</td><td>2/year</td><td>30 m/px</td><td>Annual (5)</td><td>GeoTIFF uint8/16</td><td>EPSG:4326</td></tr>
+        <tr><td>GLAD-S2</td><td>Label (Sentinel)</td><td>2</td><td>10 m/px</td><td>Cumulative</td><td>GeoTIFF uint8/16</td><td>EPSG:4326</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─── BAND TABLE ─── -->
+<section class="de-section">
+  <h2 class="de-sec-title">Sentinel-2 Band Reference</h2>
+  <div class="de-table-wrap">
+    <table class="de-table de-band-table">
+      <thead>
+        <tr><th>Band</th><th>Name</th><th>λ (nm)</th><th>Primary Use</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="band-dot" style="background:#a78bfa"></span>B01</td><td>Aerosol</td><td>443</td><td>Atmospheric correction</td></tr>
+        <tr><td><span class="band-dot" style="background:#60a5fa"></span>B02</td><td>Blue</td><td>490</td><td>Soil / vegetation</td></tr>
+        <tr><td><span class="band-dot" style="background:#34d399"></span>B03</td><td>Green</td><td>560</td><td>Vegetation vigor</td></tr>
+        <tr><td><span class="band-dot" style="background:#f87171"></span>B04</td><td>Red</td><td>665</td><td>Chlorophyll absorption</td></tr>
+        <tr><td><span class="band-dot" style="background:#fb923c"></span>B05</td><td>Red Edge 1</td><td>705</td><td>Vegetation classification</td></tr>
+        <tr><td><span class="band-dot" style="background:#f97316"></span>B06</td><td>Red Edge 2</td><td>740</td><td>Leaf area index</td></tr>
+        <tr><td><span class="band-dot" style="background:#ea580c"></span>B07</td><td>Red Edge 3</td><td>783</td><td>Canopy structure</td></tr>
+        <tr><td><span class="band-dot" style="background:#dc2626"></span>B08</td><td>NIR</td><td>842</td><td>Biomass / NDVI</td></tr>
+        <tr><td><span class="band-dot" style="background:#b91c1c"></span>B8A</td><td>Narrow NIR</td><td>865</td><td>Water vapor ref.</td></tr>
+        <tr><td><span class="band-dot" style="background:#06b6d4"></span>B09</td><td>Water Vapor</td><td>945</td><td>Atmospheric water</td></tr>
+        <tr><td><span class="band-dot" style="background:#818cf8"></span>B10</td><td>Cirrus</td><td>1375</td><td>Cloud detection</td></tr>
+        <tr><td><span class="band-dot" style="background:#f472b6"></span>B11</td><td>SWIR-1</td><td>1610</td><td>Moisture / burn scars</td></tr>
+        <tr><td><span class="band-dot" style="background:#e879f9"></span>B12</td><td>SWIR-2</td><td>2190</td><td>Geology / moisture</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer class="de-footer">
+  <p>OASIS Data Explorer · Satellite imagery © ESA Copernicus · Labels © RADD / GLAD</p>
+  <a href="index.html">← Return to main visualization</a>
+</footer>
+
+<script src="data-explorer.js"></script>
+</body>
+</html>

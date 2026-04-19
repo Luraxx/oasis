@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>OASIS — Deforestation Detection from Space</title>
+  <meta name="description" content="Multi-modal satellite pipeline for detecting deforestation across three continents — 53.46% Union IoU, 4th place">
+  <meta name="theme-color" content="#10b981">
+  <meta property="og:title" content="OASIS — Deforestation Detection from Space">
+  <meta property="og:description" content="7-model ensemble pipeline combining radar, optical imagery, and AI embeddings. 53.46% Union IoU — 4th place at osapiens EUDR Makeathon 2026.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" as="style">
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Preloader -->
+<div id="preloader">
+  <div class="pre-inner">
+    <span class="pre-count" id="preCount">0</span>
+    <div class="pre-bar"><div class="pre-fill" id="preFill"></div></div>
+    <span class="pre-label">OASIS</span>
+  </div>
+</div>
+
+<!-- Cursor -->
+<div class="cur-dot" id="curDot"></div>
+<div class="cur-ring" id="curRing"></div>
+
+<!-- Back to Top -->
+<button class="back-top" id="backTop" aria-label="Back to top">↑</button>
+
+<!-- Mini Music Player -->
+<div class="music-player" id="musicPlayer">
+  <audio id="bgAudio" preload="none">
+    <source src="track-floating.mp3" type="audio/mpeg">
+  </audio>
+  <button class="mp-btn" id="mpToggle" aria-label="Toggle music">
+    <svg class="mp-icon mp-play" id="mpPlayIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>
+    <svg class="mp-icon mp-pause" id="mpPauseIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+  </button>
+  <div class="mp-info">
+    <span class="mp-title" id="mpTitle">Floating Cities</span>
+    <div class="mp-viz" id="mpViz">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+  <button class="mp-skip" id="mpNext" aria-label="Next track">⏭</button>
+  <input type="range" class="mp-vol" id="mpVol" min="0" max="100" value="30" aria-label="Volume">
+</div>
+
+<!-- Film Grain -->
+<div class="grain"><svg><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#noiseFilter)"/></svg></div>
+
+<!-- Scroll Progress -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- Nav -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" data-magnetic><span class="logo-dot"></span>OASIS</a>
+    <div class="nav-links">
+      <a href="#challenge" class="nav-link" data-magnetic>Challenge</a>
+      <a href="#data" class="nav-link" data-magnetic>Data</a>
+      <a href="#features" class="nav-link" data-magnetic>Features</a>
+      <a href="#models" class="nav-link" data-magnetic>Models</a>
+      <a href="#pipeline" class="nav-link" data-magnetic>Pipeline</a>
+      <a href="#results" class="nav-link" data-magnetic>Results</a>
+
+    </div>
+    <button class="menu-btn" id="menuBtn" data-magnetic aria-label="Menu"><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#challenge" class="mm-link">Challenge</a>
+  <a href="#data" class="mm-link">Data</a>
+  <a href="#features" class="mm-link">Features</a>
+  <a href="#models" class="mm-link">Models</a>
+  <a href="#pipeline" class="mm-link">Pipeline</a>
+  <a href="#results" class="mm-link">Results</a>
+</div>
+
+<!-- ════════ HERO ════════ -->
+<section id="hero" class="hero">
+  <canvas id="globeCanvas"></canvas>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      EU Deforestation Regulation · EUDR
+    </div>
+    <h1 class="hero-title">
+      <div class="tl"><span>Detecting</span></div>
+      <div class="tl"><span class="accent">Deforestation</span></div>
+      <div class="tl"><span>From Space</span></div>
+    </h1>
+    <p class="hero-sub">
+      A multi-modal satellite pipeline combining <em>radar</em>, <em>optical imagery</em>,
+      and <em>AI embeddings</em> with ensemble learning to detect forest loss across three continents.
+    </p>
+    <div class="hero-cta">
+      <a href="#challenge" class="btn-primary" data-magnetic><span>Explore Pipeline</span><span class="btn-arrow">→</span></a>
+      <a href="#pipeline" class="btn-ghost" data-magnetic><span>View Architecture</span></a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hstat"><span class="hstat-num" data-count="508">0</span><span class="hstat-label">Features</span></div>
+    <div class="hstat-div"></div>
+    <div class="hstat"><span class="hstat-num" data-count="7">0</span><span class="hstat-label">Models</span></div>
+    <div class="hstat-div"></div>
+    <div class="hstat"><span class="hstat-num" data-count="16">0</span><span class="hstat-label">Tiles</span></div>
+    <div class="hstat-div"></div>
+    <div class="hstat"><span class="hstat-num" data-count="72">0</span><span class="hstat-label">Months</span></div>
+  </div>
+
+  <div class="scroll-cue"><div class="scroll-line"></div><span>Scroll</span></div>
+</section>
+
+<!-- ════════ 01 CHALLENGE ════════ -->
+<section id="challenge" class="sec">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2 class="sec-title">Monitoring Earth's<br>Forests <span class="gradient">From Orbit</span></h2>
+      <p class="sec-desc">Under the EU Deforestation Regulation, companies must verify supply chains
+      are deforestation-free. This pipeline enables scalable geospatial monitoring.</p>
+    </div>
+  </div>
+
+  <!-- Horizontal Gallery -->
+  <div class="hscroll" id="hscrollWrap">
+    <div class="hscroll-track" id="hscrollTrack">
+      <div class="hcard">
+        <div class="hcard-img"><img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=900&q=80" alt="Amazon" loading="lazy"></div>
+        <div class="hcard-body">
+          <span class="hcard-tag">Training Region</span>
+          <h3>Amazon Basin</h3>
+          <p>9 tiles · Dense tropical rainforest with the highest deforestation pressure globally</p>
+        </div>
+      </div>
+      <div class="hcard">
+        <div class="hcard-img"><img src="https://images.unsplash.com/photo-1511497584788-876760111969?w=900&q=80" alt="SE Asia" loading="lazy"></div>
+        <div class="hcard-body">
+          <span class="hcard-tag">Training Region</span>
+          <h3>Southeast Asia</h3>
+          <p>5 tiles · Mixed tropical forests under palm oil expansion pressure</p>
+        </div>
+      </div>
+      <div class="hcard">
+        <div class="hcard-img"><img src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=900&q=80" alt="Africa" loading="lazy"></div>
+        <div class="hcard-body">
+          <span class="hcard-tag test">Test Only</span>
+          <h3>Africa</h3>
+          <p>3 tiles · Completely unseen during training. The ultimate generalization test.</p>
+        </div>
+      </div>
+      <div class="hcard hcard-dark">
+        <div class="hcard-grid">
+          <div class="cg"><div class="cg-icon">🛰️</div><h4>Multi-Modal Inputs</h4><p>Radar, optical, AI embeddings — different resolutions, CRS, temporal cadence</p></div>
+          <div class="cg"><div class="cg-icon">🏷️</div><h4>Weak Supervision</h4><p>Three noisy label sources with disagreement. No clean ground truth.</p></div>
+          <div class="cg"><div class="cg-icon">🌍</div><h4>Geographic Generalization</h4><p>Must work on unseen Africa with different forests and clearing patterns.</p></div>
+          <div class="cg"><div class="cg-icon">📐</div><h4>Pixel-Level Precision</h4><p>10m × 10m. Billions of decisions per tile. Vectorized to polygons.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="hscroll-progress"><div class="hscroll-fill" id="hscrollFill"></div></div>
+  </div>
+</section>
+<section id="data" class="sec sec-alt">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <h2 class="sec-title">Satellite Eyes<br><span class="gradient">On Earth</span></h2>
+      <p class="sec-desc">Four distinct data streams fused into a unified per-tile representation.</p>
+    </div>
+
+    <!-- Cinematic Earth -->
+    <div class="reveal-image" data-speed="0.8">
+      <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=1600&q=80" alt="Earth from ISS" loading="lazy">
+    </div>
+
+    <!-- Data Tabs -->
+    <div class="data-tabs">
+      <button class="dtab active" data-panel="s2" data-magnetic><span class="dtab-icon">🛰️</span><div><span class="dtab-name">Sentinel-2</span><span class="dtab-sub">Optical · 12 bands</span></div></button>
+      <button class="dtab" data-panel="s1" data-magnetic><span class="dtab-icon">📡</span><div><span class="dtab-name">Sentinel-1</span><span class="dtab-sub">Radar · VV</span></div></button>
+      <button class="dtab" data-panel="aef" data-magnetic><span class="dtab-icon">🧠</span><div><span class="dtab-name">AEF</span><span class="dtab-sub">Embeddings · 64d</span></div></button>
+      <button class="dtab" data-panel="labels" data-magnetic><span class="dtab-icon">🏷️</span><div><span class="dtab-name">Labels</span><span class="dtab-sub">Weak · 3 sources</span></div></button>
+      <div class="dtab-indicator" id="dtabIndicator"></div>
+    </div>
+
+    <div class="data-panels">
+      <div class="dpanel active" id="dpanel-s2">
+        <div class="dpanel-grid">
+          <div class="dpanel-viz">
+            <div class="band-stack">
+              <div class="band" style="--c:#4361ee;--i:0">B02 Blue</div>
+              <div class="band" style="--c:#22c55e;--i:1">B03 Green</div>
+              <div class="band" style="--c:#ef4444;--i:2">B04 Red</div>
+              <div class="band" style="--c:#f97316;--i:3">B05 VegRE</div>
+              <div class="band" style="--c:#f59e0b;--i:4">B06 VegRE</div>
+              <div class="band" style="--c:#eab308;--i:5">B07 VegRE</div>
+              <div class="band" style="--c:#10b981;--i:6">B08 NIR</div>
+              <div class="band" style="--c:#14b8a6;--i:7">B8A nNIR</div>
+              <div class="band" style="--c:#06b6d4;--i:8">B09 WV</div>
+              <div class="band" style="--c:#8b5cf6;--i:9">B11 SWIR</div>
+              <div class="band" style="--c:#a855f7;--i:10">B12 SWIR</div>
+              <div class="band" style="--c:#6366f1;--i:11">B01 Coastal</div>
+            </div>
+            <span class="viz-cap">12 spectral bands × 72 monthly composites</span>
+          </div>
+          <div class="dpanel-info">
+            <h3>Sentinel-2 — Multi-Spectral Optical</h3>
+            <div class="specs">
+              <div class="spec"><span>Resolution</span><span>10m native</span></div>
+              <div class="spec"><span>Bands</span><span>12 channels (400–2200nm)</span></div>
+              <div class="spec"><span>Temporal</span><span>Monthly composites 2020–2025</span></div>
+              <div class="spec"><span>Shape</span><span class="mono">(72, 12, H, W)</span></div>
+            </div>
+            <p class="dpanel-note">Primary optical signal. Cloud-masked composites for vegetation indices (NDVI, NBR, EVI).</p>
+          </div>
+        </div>
+      </div>
+      <div class="dpanel" id="dpanel-s1">
+        <div class="dpanel-grid">
+          <div class="dpanel-viz">
+            <div class="radar-viz"><svg viewBox="0 0 300 120" class="radar-svg"><path d="M0,60 Q15,20 30,60 T60,60 T90,60 T120,60 T150,60 T180,60 T210,60 T240,60 T270,60 T300,60" stroke="#10b981" fill="none" stroke-width="2" class="radar-wave"/><path d="M0,60 Q15,100 30,60 T60,60 T90,60 T120,60 T150,60 T180,60 T210,60 T240,60 T270,60 T300,60" stroke="#06b6d4" fill="none" stroke-width="2" class="radar-wave rw2"/></svg><div class="radar-labels"><span>Ascending ↗</span><span>Descending ↙</span></div></div>
+            <span class="viz-cap">SAR VV backscatter (dB) × 72 months per orbit</span>
+          </div>
+          <div class="dpanel-info">
+            <h3>Sentinel-1 — Synthetic Aperture Radar</h3>
+            <div class="specs">
+              <div class="spec"><span>Resolution</span><span>30m → 10m reprojected</span></div>
+              <div class="spec"><span>Channel</span><span>VV polarization (dB)</span></div>
+              <div class="spec"><span>Orbits</span><span>Ascending + Descending</span></div>
+              <div class="spec"><span>Shape</span><span class="mono">(72, 1, H, W) ×2</span></div>
+            </div>
+            <p class="dpanel-note">Radar sees through clouds — critical for tropical regions with persistent cover.</p>
+          </div>
+        </div>
+      </div>
+      <div class="dpanel" id="dpanel-aef">
+        <div class="dpanel-grid">
+          <div class="dpanel-viz">
+            <div class="embed-grid" id="embedGrid"></div>
+            <span class="viz-cap">64-dimensional learned features × 6 annual mosaics</span>
+          </div>
+          <div class="dpanel-info">
+            <h3>AEF — AI Foundation Embeddings</h3>
+            <div class="specs">
+              <div class="spec"><span>Dimensions</span><span>64 channels per pixel</span></div>
+              <div class="spec"><span>Temporal</span><span>Annual (2020–2025)</span></div>
+              <div class="spec"><span>Shape</span><span class="mono">(6, 64, H, W)</span></div>
+              <div class="spec"><span>Features</span><span>387 derived</span></div>
+            </div>
+            <p class="dpanel-note">Cosine distances track embedding-space drift — a semantic change signal.</p>
+          </div>
+        </div>
+      </div>
+      <div class="dpanel" id="dpanel-labels">
+        <div class="dpanel-grid">
+          <div class="dpanel-viz">
+            <div class="label-viz">
+              <div class="lv-src"><div class="lv-bar"><div class="lv-fill" style="width:70%;--c:#10b981"></div></div><span>RADD</span></div>
+              <div class="lv-src"><div class="lv-bar"><div class="lv-fill" style="width:55%;--c:#f59e0b"></div></div><span>GLAD-L</span></div>
+              <div class="lv-src"><div class="lv-bar"><div class="lv-fill" style="width:35%;--c:#ef4444"></div></div><span>GLAD-S2</span></div>
+              <div class="lv-arrow">↓ Majority Vote</div>
+              <div class="lv-badges"><span class="lv-b high">3/3 → 1.0</span><span class="lv-b med">2/3 → 0.67</span><span class="lv-b low">1/2 → 0.50</span></div>
+            </div>
+          </div>
+          <div class="dpanel-info">
+            <h3>Weak Supervision — Label Fusion</h3>
+            <div class="specs">
+              <div class="spec"><span>Sources</span><span>RADD + GLAD-L + GLAD-S2</span></div>
+              <div class="spec"><span>Fusion</span><span>Majority vote (≥ n/2)</span></div>
+              <div class="spec"><span>Weights</span><span>n_votes / n_available</span></div>
+              <div class="spec"><span>Consensus</span><span>≥2 sources (eval)</span></div>
+            </div>
+            <p class="dpanel-note">No clean ground truth. Three noisy sources fused via majority voting.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ 03 FEATURES ════════ -->
+<section id="features" class="sec">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <h2 class="sec-title">Extracting Signal<br><span class="gradient">From Noise</span></h2>
+      <p class="sec-desc">~508 handcrafted features per pixel — spectral health, temporal dynamics,
+      and learned representations across 5 years of satellite imagery.</p>
+    </div>
+
+    <div class="feat-layout">
+      <div class="feat-donut-wrap">
+        <canvas id="donutChart" width="400" height="400"></canvas>
+        <div class="donut-center"><span class="donut-num" data-count="508">0</span><span class="donut-label">Features</span></div>
+      </div>
+      <div class="feat-cats">
+        <div class="fcat open" data-cat="s2">
+          <div class="fcat-head"><span class="fcat-dot" style="--c:#10b981"></span><h4>S2 Spectral Indices</h4><span class="fcat-count">84</span></div>
+          <div class="fcat-body">
+            <div class="idx-grid">
+              <span class="idx">NDVI <small>(B08−B04)/(B08+B04)</small></span>
+              <span class="idx">NBR <small>(B08−B12)/(B08+B12)</small></span>
+              <span class="idx">NDMI <small>(B08−B11)/(B08+B11)</small></span>
+              <span class="idx">EVI <small>2.5×(B08−B04)/…</small></span>
+            </div>
+            <p class="fcat-note">Per index → 6 yearly means · stats (μ,σ,min,max) · trend slope · max drop</p>
+          </div>
+        </div>
+        <div class="fcat"><div class="fcat-head"><span class="fcat-dot" style="--c:#06b6d4"></span><h4>S1 Radar Features</h4><span class="fcat-count">20</span></div><div class="fcat-body"><p class="fcat-note">Per orbit: yearly VV means · stats · max drop · coherence proxy</p></div></div>
+        <div class="fcat"><div class="fcat-head"><span class="fcat-dot" style="--c:#8b5cf6"></span><h4>AEF Embeddings</h4><span class="fcat-count">387</span></div><div class="fcat-body"><p class="fcat-note">384 flattened (6×64) dims · 5 cosine distances · derived metrics</p></div></div>
+        <div class="fcat"><div class="fcat-head"><span class="fcat-dot" style="--c:#f59e0b"></span><h4>External Layers</h4><span class="fcat-count">17</span></div><div class="fcat-body"><p class="fcat-note">WorldCover · Hansen · JRC TMF · OSM roads · coordinates</p></div></div>
+      </div>
+    </div>
+
+    <div class="ts-section">
+      <h3 class="sub-title">Temporal Signal: Forest → Cleared</h3>
+      <p class="sub-desc">Watch how vegetation indices collapse when deforestation occurs.</p>
+      <div class="ts-wrap">
+        <canvas id="tsChart" width="960" height="340"></canvas>
+        <div class="ts-btns">
+          <button class="ts-btn active" data-series="forest" data-magnetic>🌲 Intact Forest</button>
+          <button class="ts-btn" data-series="cleared" data-magnetic>🪓 Deforested 2023</button>
+          <button class="ts-btn" data-series="gradual" data-magnetic>📉 Gradual Degradation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ 04 MODELS ════════ -->
+<section id="models" class="sec sec-alt">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2 class="sec-title">Three Perspectives<br><span class="gradient">One Decision</span></h2>
+      <p class="sec-desc">Each model sees deforestation differently. Their ensemble captures what no single model can.</p>
+    </div>
+
+    <div class="reveal-image small" data-speed="0.6">
+      <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=80" alt="Earth night" loading="lazy">
+    </div>
+
+    <div class="model-grid">
+      <!-- Eklavya -->
+      <div class="mcard" data-tilt>
+        <div class="mcard-glow" style="--mc:#10b981"></div>
+        <div class="mcard-accent" style="--mc:#10b981"></div>
+        <div class="mcard-top"><span class="mcard-emoji">🌳</span><div><h3>Eklavya</h3><span class="mcard-type">5-Model Calibrated Stack</span></div><span class="mcard-badge" style="--mc:#10b981">Primary</span></div>
+        <div class="mcard-arch"><span class="an">LightGBM</span><span class="ae">+</span><span class="an">TCN</span><span class="ae">+</span><span class="an core">3× U-Net</span><span class="ae">→</span><span class="an">Isotonic → Stack</span></div>
+        <div class="mcard-props"><span>📊 508 features (LightGBM)</span><span>📈 Temporal CNN (19ch × 72t)</span><span>🗺️ U-Net: B3, ResNet34, MiT-B1</span></div>
+        <div class="mcard-cfg"><div><span>OOF IoU</span><code>71.67%</code></div><div><span>models</span><code>5</code></div><div><span>fusion</span><code>isotonic+logistic</code></div></div>
+      </div>
+      <!-- Luis -->
+      <div class="mcard" data-tilt>
+        <div class="mcard-glow" style="--mc:#06b6d4"></div>
+        <div class="mcard-accent" style="--mc:#06b6d4"></div>
+        <div class="mcard-top"><span class="mcard-emoji">🌊</span><div><h3>Luis</h3><span class="mcard-type">2-Model LORO Ensemble</span></div><span class="mcard-badge" style="--mc:#06b6d4">Compact</span></div>
+        <div class="mcard-arch"><span class="an">LightGBM (49–63 feat)</span><span class="ae">+</span><span class="an core">U-Net (B4)</span><span class="ae">→</span><span class="an">50/50 Avg</span></div>
+        <div class="mcard-props"><span>⚡ Compact feature set</span><span>🔄 Leave-One-Region-Out CV</span><span>🎯 EfficientNet-B4 encoder</span></div>
+        <div class="mcard-cfg"><div><span>OOF IoU</span><code>57.99%</code></div><div><span>models</span><code>2</code></div><div><span>fusion</span><code>50/50 avg</code></div></div>
+      </div>
+      <!-- Combined -->
+      <div class="mcard" data-tilt>
+        <div class="mcard-glow" style="--mc:#8b5cf6"></div>
+        <div class="mcard-accent" style="--mc:#8b5cf6"></div>
+        <div class="mcard-top"><span class="mcard-emoji">🔗</span><div><h3>Combined</h3><span class="mcard-type">60/40 Weighted Average</span></div><span class="mcard-badge" style="--mc:#8b5cf6">Final</span></div>
+        <div class="mcard-arch"><span class="an">Eklavya (60%)</span><span class="ae">+</span><span class="an core">Luis (40%)</span><span class="ae">→</span><span class="an">Per-Tile Threshold</span></div>
+        <div class="mcard-props"><span>📐 Simple weighted avg beat all fancy methods</span><span>🎯 Per-tile thresholds (0.20–0.28)</span><span>🏆 +2.2pp over best single family</span></div>
+        <div class="mcard-cfg"><div><span>OOF IoU</span><code>73.87%</code></div><div><span>weight</span><code>60/40</code></div><div><span>test IoU</span><code>53.46%</code></div></div>
+      </div>
+    </div>
+
+    <!-- Ensemble -->
+    <div class="ens-section">
+      <h3 class="sub-title">Ensemble Pipeline</h3>
+      <div class="ens-flow">
+        <div class="ens-sources">
+          <div class="ens-src glass" style="--c:#10b981"><span>🌳</span><div><strong>Eklavya</strong><small>5 models · OOF 71.67%</small></div></div>
+          <div class="ens-src glass" style="--c:#06b6d4"><span>🌊</span><div><strong>Luis</strong><small>2 models · OOF 57.99%</small></div></div>
+        </div>
+        <div class="ens-connector"><svg viewBox="0 0 60 60" class="ens-svg"><path d="M0,15 Q30,15 30,30" stroke="rgba(16,185,129,.4)" fill="none" stroke-width="1.5"/><path d="M0,45 Q30,45 30,30" stroke="rgba(16,185,129,.4)" fill="none" stroke-width="1.5"/><path d="M30,30 L60,30" stroke="rgba(16,185,129,.6)" fill="none" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="30" cy="30" r="3" fill="#10b981"/></svg></div>
+        <div class="ens-step glass"><span class="ens-icon">📐</span><strong>60/40 Weighted Average</strong><small>Simple fusion — beat all fancy methods</small></div>
+        <div class="ens-arrow-line"><svg viewBox="0 0 40 10" class="ens-arrow-svg"><line x1="0" y1="5" x2="32" y2="5" stroke="rgba(16,185,129,.4)" stroke-width="1.5"/><polygon points="32,2 38,5 32,8" fill="rgba(16,185,129,.5)"/></svg></div>
+        <div class="ens-thresholds glass">
+          <span class="ens-th-title">Per-Tile Thresholds</span>
+          <div class="ens-th-row"><span class="ens-th" style="--c:#10b981">🌿 NVJ <code>t=0.20</code></span><span class="ens-th" style="--c:#10b981">🌿 NYH <code>t=0.28</code></span><span class="ens-th" style="--c:#f59e0b">🌍 NTE <code>t=0.25</code></span><span class="ens-th" style="--c:#06b6d4">🌴 QMA <code>t=0.20</code></span><span class="ens-th" style="--c:#06b6d4">🌴 PWA <code>t=0.28</code></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ 05 PIPELINE ════════ -->
+<section id="pipeline" class="sec">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-num">05</span>
+      <h2 class="sec-title">End-to-End<br><span class="gradient">Architecture</span></h2>
+      <p class="sec-desc">From raw satellite tiles to validated GeoJSON — every step reproducible and deterministic.</p>
+    </div>
+
+    <div class="pipe-track">
+      <div class="pipe-line"><div class="pipe-fill" id="pipeFill"></div></div>
+
+      <div class="pipe-step"><div class="pipe-dot"></div><div class="pipe-card glass" data-tilt><span class="pipe-n">0</span><h4>Data Audit</h4><p>Verify S1/S2/AEF/labels per tile.</p><code>audit.py</code></div></div>
+      <div class="pipe-step right"><div class="pipe-dot"></div><div class="pipe-card glass" data-tilt><span class="pipe-n">1</span><h4>Cache Build</h4><p>Reproject to S2 grid → bundle.npz.</p><code>scripts/build_cache.py</code></div></div>
+      <div class="pipe-step"><div class="pipe-dot"></div><div class="pipe-card glass" data-tilt><span class="pipe-n">2</span><h4>Label Fusion</h4><p>RADD + GLAD → soft confidence + consensus.</p><code>oasis/labels/fusion.py</code></div></div>
+      <div class="pipe-step right"><div class="pipe-dot"></div><div class="pipe-card glass" data-tilt><span class="pipe-n">3</span><h4>Feature Engineering</h4><p>~508 features from all modalities.</p><code>oasis/features/pack.py</code></div></div>
+      <div class="pipe-step"><div class="pipe-dot"></div><div class="pipe-card glass pipe-wide" data-tilt><span class="pipe-n">4</span><h4>Model Training × 3</h4><div class="pipe-models"><span style="--c:#10b981">LightGBM</span><span style="--c:#06b6d4">TCN</span><span style="--c:#8b5cf6">U-Net</span></div><p>LORO CV + full retrain.</p><code>scripts/train_*.py</code></div></div>
+      <div class="pipe-step right"><div class="pipe-dot"></div><div class="pipe-card glass" data-tilt><span class="pipe-n">5</span><h4>Ensemble Fusion</h4><p>60/40 weighted average (Eklavya + Luis).</p><code>scripts/fit_ensemble.py</code></div></div>
+      <div class="pipe-step"><div class="pipe-dot"></div><div class="pipe-card glass" data-tilt><span class="pipe-n">6</span><h4>Test Inference</h4><p>All models → stack → threshold → binary.</p><code>scripts/infer_test.py</code></div></div>
+      <div class="pipe-step right"><div class="pipe-dot"></div><div class="pipe-card glass" data-tilt><span class="pipe-n">7</span><h4>Post-Processing</h4><p>Close(2) → Dilate(2) → Erode(4) → area filter.</p><code>oasis/postprocess.py</code></div></div>
+      <div class="pipe-step final"><div class="pipe-dot pipe-dot-final"></div><div class="pipe-card glass pipe-final" data-tilt><span class="pipe-n">8</span><h4>Submission</h4><p>GeoJSON (4326) with confidence + timing.</p><code>oasis/submission_check.py</code></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ 06 RESULTS ════════ -->
+<section id="results" class="sec sec-alt">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-num">06</span>
+      <h2 class="sec-title">From Probabilities<br><span class="gradient">To Polygons</span></h2>
+      <p class="sec-desc">Raw probabilities refined through morphological operations, filtering, and vectorization.</p>
+    </div>
+
+    <div class="pp-flow">
+      <div class="pp-step"><div class="pp-viz"><canvas id="ppProbs" width="120" height="120"></canvas></div><span>Raw Probs</span><small>[0,1]</small></div>
+      <div class="pp-arr">→</div>
+      <div class="pp-step"><div class="pp-viz"><canvas id="ppBinary" width="120" height="120"></canvas></div><span>Threshold</span><small>t = 0.20–0.28</small></div>
+      <div class="pp-arr">→</div>
+      <div class="pp-step"><div class="pp-viz"><canvas id="ppMorph" width="120" height="120"></canvas></div><span>Close + Dilate</span><small>close(2) · dil(2)</small></div>
+      <div class="pp-arr">→</div>
+      <div class="pp-step"><div class="pp-viz"><canvas id="ppErode" width="120" height="120"></canvas></div><span>Erode(4)</span><small>Key step: −3.6pp FPR</small></div>
+      <div class="pp-arr">→</div>
+      <div class="pp-step"><div class="pp-viz"><canvas id="ppFilter" width="120" height="120"></canvas></div><span>Area Filter</span><small>&lt;0.10ha</small></div>
+      <div class="pp-arr">→</div>
+      <div class="pp-step"><div class="pp-viz"><canvas id="ppVector" width="120" height="120"></canvas></div><span>Vectorize</span><small>GeoJSON</small></div>
+    </div>
+
+    <h3 class="sub-title">Key Innovations</h3>
+    <div class="inno-grid">
+      <div class="inno glass" data-tilt><span class="inno-n">01</span><h4>Confidence-Weighted Labels</h4><p>Soft weights w = n_votes / n_available drive all models.</p></div>
+      <div class="inno glass" data-tilt><span class="inno-n">02</span><h4>Geographic LORO Validation</h4><p>Region folds prevent spatial autocorrelation leakage.</p></div>
+      <div class="inno glass" data-tilt><span class="inno-n">03</span><h4>Post-Processing Erosion</h4><p>4m binary erosion: +0.82pp IoU. FPR drops more than recall, tightening boundaries.</p></div>
+      <div class="inno glass" data-tilt><span class="inno-n">04</span><h4>Encoder Diversity</h4><p>B3, B4, ResNet34, MiT-B1 — variance drives ensemble gains.</p></div>
+      <div class="inno glass" data-tilt><span class="inno-n">05</span><h4>AEF Cosine Distances</h4><p>Semantic transitions beyond spectral indices.</p></div>
+      <div class="inno glass" data-tilt><span class="inno-n">06</span><h4>Simple Fusion Wins</h4><p>60/40 weighted average outperformed meta-stackers, power means, and smart fusion.</p></div>
+    </div>
+
+    <!-- Results Banner -->
+    <div class="results-banner">
+      <div class="rb-score">
+        <span class="rb-num">53.46%</span>
+        <span class="rb-label">Union IoU — 4th Place</span>
+      </div>
+      <div class="rb-metrics">
+        <div class="rb-m"><span>69.34%</span><small>Recall</small></div>
+        <div class="rb-m"><span>29.99%</span><small>FPR</small></div>
+        <div class="rb-m"><span>8.23%</span><small>Year Score</small></div>
+      </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <h3 class="sub-title">Final Leaderboard</h3>
+    <div class="leaderboard">
+      <div class="lb-row lb-header"><span class="lb-rank">#</span><span class="lb-team">Team</span><span class="lb-score">Score</span></div>
+      <div class="lb-row"><span class="lb-rank">🥇</span><span class="lb-team">Non Deterministic</span><span class="lb-score">54.29%</span></div>
+      <div class="lb-row"><span class="lb-rank">🥈</span><span class="lb-team">OMEGA-EARTH</span><span class="lb-score">54.23%</span></div>
+      <div class="lb-row"><span class="lb-rank">🥉</span><span class="lb-team">Aguacates</span><span class="lb-score">54.05%</span></div>
+      <div class="lb-row lb-us"><span class="lb-rank">4</span><span class="lb-team">Oasis (us)</span><span class="lb-score">53.46%</span></div>
+    </div>
+    <p class="lb-gap">Gap to #1: 0.83 percentage points</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand"><span class="footer-logo">🌍 OASIS</span><p>Deforestation Detection Pipeline<br>osapiens EUDR Challenge</p></div>
+      <div class="footer-metrics">
+        <div class="fm"><span>~508</span><small>Features</small></div>
+        <div class="fm"><span>7</span><small>Models</small></div>
+        <div class="fm"><span>8</span><small>Stages</small></div>
+        <div class="fm"><span>3</span><small>Continents</small></div>
+      </div>
+    </div>
+    <div class="footer-bottom"><p>Pipeline visualization for the OASIS codebase</p></div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

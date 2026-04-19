@@ -1,0 +1,16 @@
+# Data explorer (excluded from deployment)
+data-explorer.html
+data-explorer.js
+data-explorer.css
+data-assets/
+
+# Audio files (large, lazy-loaded)
+*.mp3
+
+# Python scripts
+*.py
+__pycache__/
+
+# Dev files
+.git/
+*.md
